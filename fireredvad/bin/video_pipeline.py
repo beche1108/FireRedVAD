@@ -17,7 +17,7 @@ logger = logging.getLogger("fireredvad.bin.video_pipeline")
 def build_parser():
     parser = argparse.ArgumentParser(description="Split a video with FireRedVAD ONNX and classify segments with AED ONNX.")
     parser.add_argument("--video_path", type=str, required=True)
-    parser.add_argument("--model_dir", type=str, default="onnx_models")
+    parser.add_argument("--model_dir", type=str, default="pretrained_models/onnx_models")
     parser.add_argument("--output_dir", type=str, default="out/video_pipeline")
     parser.add_argument("--use_gpu", type=int, default=0)
     parser.add_argument("--include_gap_segments", type=int, default=1)

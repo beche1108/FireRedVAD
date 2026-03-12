@@ -53,7 +53,7 @@ cpu = [
     "torch>=2.0.0",
 ]
 onnx = [
-    "onnxruntime>=1.18.0",
+    "onnxruntime>=1.21.0",
     "av>=12.0.0",
 ]
 onnx-gpu = [

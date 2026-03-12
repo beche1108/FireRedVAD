@@ -29,18 +29,44 @@ def _require_onnxruntime():
 
 
 def _resolve_model_paths(model_dir_or_path, default_model_name):
-    if os.path.isdir(model_dir_or_path):
-        model_path = os.path.join(model_dir_or_path, default_model_name)
-        cmvn_path = os.path.join(model_dir_or_path, "cmvn.ark")
-    else:
-        model_path = model_dir_or_path
-        cmvn_path = os.path.join(os.path.dirname(model_dir_or_path), "cmvn.ark")
+    package_root = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 
-    if not os.path.isfile(model_path):
-        raise FileNotFoundError(f"ONNX model not found: {model_path}")
-    if not os.path.isfile(cmvn_path):
-        raise FileNotFoundError(f"CMVN file not found: {cmvn_path}")
-    return model_path, cmvn_path
+    if os.path.splitext(model_dir_or_path)[1].lower() == ".onnx":
+        model_candidates = [
+            model_dir_or_path,
+            os.path.join(package_root, "pretrained_models", "onnx_models", os.path.basename(model_dir_or_path)),
+        ]
+        model_candidates = list(dict.fromkeys(os.path.normpath(p) for p in model_candidates))
+        for model_path in model_candidates:
+            cmvn_path = os.path.join(os.path.dirname(model_path), "cmvn.ark")
+            if os.path.isfile(model_path) and os.path.isfile(cmvn_path):
+                return model_path, cmvn_path
+        raise FileNotFoundError(
+            "ONNX model not found. Tried: "
+            + ", ".join(model_candidates)
+        )
+
+    dir_candidates = [
+        model_dir_or_path,
+        os.path.join(model_dir_or_path, "onnx_models"),
+        os.path.join(model_dir_or_path, "pretrained_models", "onnx_models"),
+        os.path.join(package_root, model_dir_or_path),
+        os.path.join(package_root, "onnx_models"),
+        os.path.join(package_root, "pretrained_models", "onnx_models"),
+    ]
+    dir_candidates = list(dict.fromkeys(os.path.normpath(p) for p in dir_candidates))
+
+    for model_dir in dir_candidates:
+        model_path = os.path.join(model_dir, default_model_name)
+        cmvn_path = os.path.join(model_dir, "cmvn.ark")
+        if os.path.isfile(model_path) and os.path.isfile(cmvn_path):
+            return model_path, cmvn_path
+
+    raise FileNotFoundError(
+        "ONNX model directory not found. "
+        f"Expected `{default_model_name}` and `cmvn.ark`. Tried: "
+        + ", ".join(dir_candidates)
+    )
 
 
 def _build_session(model_path, use_gpu=False):

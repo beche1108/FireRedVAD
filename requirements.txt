@@ -1,7 +1,12 @@
---extra-index-url https://download.pytorch.org/whl/cu118
-torch==2.1.0+cu118
-numpy==1.26.1
-kaldiio==2.18.0
-kaldi_native_fbank==1.15
-soundfile==0.12.1
+# Default source-install dependencies for Python 3.12+.
+# This file stays CPU-first so `pip install -r requirements.txt` works on a
+# clean environment. For CUDA ONNX Runtime, install
+# `onnxruntime-gpu[cuda,cudnn]` instead of `onnxruntime`.
+numpy>=1.24.0
+kaldiio>=2.18.0
+kaldi-native-fbank>=1.15
+soundfile>=0.12.0
 textgrid
+torch>=2.0.0
+onnxruntime>=1.21.0
+av>=12.0.0
