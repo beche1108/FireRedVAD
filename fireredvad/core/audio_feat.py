@@ -7,7 +7,6 @@ import soundfile as sf
 import kaldiio
 import kaldi_native_fbank as knf
 import numpy as np
-import torch
 
 
 class AudioFeat:
@@ -19,7 +18,7 @@ class AudioFeat:
     def reset(self):
         pass
 
-    def extract(self, audio):
+    def extract(self, audio, return_tensor=True):
         if isinstance(audio, str):
             wav_np, sample_rate = sf.read(audio, dtype="int16")
         elif isinstance(audio, (list, tuple)):
@@ -33,7 +32,12 @@ class AudioFeat:
         fbank = self.fbank((sample_rate, wav_np))
         if self.cmvn is not None:
             fbank = self.cmvn(fbank)
-        feat = torch.from_numpy(fbank).float()
+        if return_tensor:
+            import torch
+
+            feat = torch.from_numpy(fbank).float()
+        else:
+            feat = np.asarray(fbank, dtype=np.float32)
         return feat, dur
 
 

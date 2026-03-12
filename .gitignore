@@ -1,13 +1,16 @@
 __pycache__
+.venv/
 out
 *.tar.gz
 *.wav
+*.mp4
 *.TextGrid
 *.srt
 text
 wav.scp
 utt2event
 pretrained_models/
+uv.lock
 *.swp
 *.swo
 

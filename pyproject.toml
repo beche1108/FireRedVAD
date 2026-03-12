@@ -8,7 +8,7 @@ version = "0.0.2"
 description = "FireRedVAD: A SOTA Industrial-Grade Voice Activity Detection & Audio Event Detection"
 readme = "README.md"
 license = "Apache-2.0"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 authors = [
     {name = "Kaituo Xu"},
     {name = "Wenpeng Li"},
@@ -31,8 +31,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Multimedia :: Sound/Audio :: Analysis",
@@ -54,6 +52,14 @@ gpu = [
 cpu = [
     "torch>=2.0.0",
 ]
+onnx = [
+    "onnxruntime>=1.18.0",
+    "av>=12.0.0",
+]
+onnx-gpu = [
+    "onnxruntime-gpu[cuda,cudnn]>=1.21.0",
+    "av>=12.0.0",
+]
 dev = [
     "build",
     "twine",
@@ -62,6 +68,7 @@ dev = [
 
 [project.scripts]
 fireredvad = "fireredvad.bin.fireredvad_cli:main"
+fireredvad-video = "fireredvad.bin.video_pipeline:main"
 
 [project.urls]
 Homepage = "https://github.com/FireRedTeam/FireRedVAD"
@@ -77,7 +84,7 @@ exclude = ["examples*", "assets*", "tests*"]
 fireredvad = ["py.typed"]
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py312"
 line-length = 120
 
 [tool.ruff.lint]

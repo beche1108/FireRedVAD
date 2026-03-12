@@ -36,7 +36,7 @@ pip install fireredvad[gpu]
 ### Setup (from source)
 1. Create a clean Python environment:
 ```bash
-$ conda create --name fireredvad python=3.10
+$ conda create --name fireredvad python=3.12
 $ conda activate fireredvad
 $ git clone https://github.com/FireRedTeam/FireRedVAD.git
 $ cd FireRedVAD  # or fireredvad

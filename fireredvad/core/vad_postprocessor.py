@@ -236,8 +236,18 @@ class VadPostprocessor:
         while start < length:
             if (length - start) <= self.max_speech_frame:
                 break
+            # Leave enough frames for the tail segment so the split itself does not
+            # create a fragment shorter than min_speech_frame.
+            latest_split = length - self.min_speech_frame - 1
+            if latest_split <= start:
+                break
             window_start = int(start + self.max_speech_frame / 2)
-            window_end = int(start + self.max_speech_frame)
+            window_end = int(min(start + self.max_speech_frame, latest_split + 1))
+            if window_end <= window_start:
+                window_start = start
+                window_end = int(latest_split + 1)
+                if window_end <= window_start:
+                    break
             window_probs = probs[window_start:window_end]
 
             min_index = window_start + np.argmin(window_probs)

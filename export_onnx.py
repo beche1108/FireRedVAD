@@ -1,6 +1,6 @@
 #!/usr/bin/env -S uv run --extra cpu
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.12"
 # dependencies = [
 #     "fireredvad",
 #     "torch>=2.0.0",
