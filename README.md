@@ -7,7 +7,7 @@ Voice Activity Detection & Audio Event Detection
 
 </div>
 
-[[PyPI]](https://pypi.org/project/fireredvad/)
+[[Paper]](https://arxiv.org/pdf/2603.10420)
 [[HuggingFace]](https://huggingface.co/FireRedTeam/FireRedVAD)
 [[ModelScope]](https://www.modelscope.cn/models/xukaituo/FireRedVAD)
 
@@ -18,6 +18,7 @@ FireRedVAD supports non-streaming/streaming VAD and non-streaming AED. It suppor
 
 
 ## 🔥 News
+- [2026.03.12] We release FireRedASR2S (including FireRedVAD) technical report. See [arXiv](https://arxiv.org/abs/2603.10420).
 - [2026.03.03] We release FireRedVAD as a standalone repository, along with model weights and inference code.
 - [2026.02.12] We release [FireRedASR2S](https://github.com/FireRedTeam/FireRedASR2S) (FireRedASR2-AED, FireRedVAD, FireRedLID, and FireRedPunc) with model weights and inference code.
 
@@ -25,15 +26,7 @@ FireRedVAD supports non-streaming/streaming VAD and non-streaming AED. It suppor
 
 ## Quick Start
 
-### Install via pip
-```bash
-pip install fireredvad
-
-# With PyTorch (if not already installed)
-pip install fireredvad[gpu]
-```
-
-### Setup (from source)
+### Setup
 1. Create a clean Python environment:
 ```bash
 $ conda create --name fireredvad python=3.12
@@ -41,15 +34,25 @@ $ conda activate fireredvad
 $ git clone https://github.com/FireRedTeam/FireRedVAD.git
 $ cd FireRedVAD  # or fireredvad
 ```
+Run Step 2 or Step 3 (choose one).
 
-2. Install dependencies and set up PATH and PYTHONPATH:
+2. (via pypi) Install dependencies and set up the environment
+```bash
+pip install fireredvad
+
+# With PyTorch (if not already installed)
+pip install fireredvad[gpu]
+```
+
+3. (from source) Install dependencies and set up PATH and PYTHONPATH:
 ```bash
 $ pip install -r requirements.txt
 $ export PATH=$PWD/fireredvad/bin/:$PATH
 $ export PYTHONPATH=$PWD/:$PYTHONPATH
 ```
 
-3. Download models:
+
+4. Download models:
 ```bash
 # Download via ModelScope (recommended for users in China)
 pip install -U modelscope
@@ -60,7 +63,7 @@ pip install -U "huggingface_hub[cli]"
 huggingface-cli download FireRedTeam/FireRedVAD --local-dir ./pretrained_models/FireRedVAD
 ```
 
-4. Convert your audio to **16kHz 16-bit mono PCM** format if needed:
+5. Convert your audio to **16kHz 16-bit mono PCM** format if needed:
 ```bash
 $ ffmpeg -i <input_audio_path> -ar 16000 -ac 1 -acodec pcm_s16le -f wav <output_wav_path>
 ```
@@ -78,14 +81,14 @@ $ bash inference_aed.sh
 If installed via `pip install fireredvad`, use the `fireredvad` CLI directly:
 ```bash
 $ fireredvad --task vad --wav_path assets/hello_zh.wav --model_dir pretrained_models/FireRedVAD/VAD
-# 2026-03-06 17:30:00,086 (param:16) INFO: #param of DetectModel <class 'fireredvad.core.detect_model.DetectModel'> is 588417 = 2.2 MB (float32)
-# 2026-03-06 17:30:00,131 (fireredvad_cli:37) INFO: Result: {'dur': 2.32, 'timestamps': [(0.44, 1.82)], 'wav_path': 'assets/hello_zh.wav'}
+# #param of DetectModel <class 'fireredvad.core.detect_model.DetectModel'> is 588417 = 2.2 MB (float32)
+# Result: {'dur': 2.32, 'timestamps': [(0.44, 1.82)], 'wav_path': 'assets/hello_zh.wav'}
 $ fireredvad --task stream_vad --wav_path assets/hello_en.wav --model_dir pretrained_models/FireRedVAD/Stream-VAD
-# 2026-03-06 17:30:28,318 (param:16) INFO: #param of DetectModel <class 'fireredvad.core.detect_model.DetectModel'> is 567937 = 2.2 MB (float32)
-# 2026-03-06 17:30:28,342 (fireredvad_cli:37) INFO: Result: ([StreamVadFrameResult(frame_idx=1, is_speech=0, raw_prob=0.037, smoothed_prob=0.037, is_speech_start=False, is_speech_end=False, speech_start_frame=-1, speech_end_frame=-1), StreamVadFrameResult(frame_idx=2, is_speech=0, raw_prob=0.037, smoothed_prob=0.037, is_speech_start=False, is_speech_end=False, speech_start_frame=-1, speech_end_frame=-1), ...]
+# #param of DetectModel <class 'fireredvad.core.detect_model.DetectModel'> is 567937 = 2.2 MB (float32)
+# Result: ([StreamVadFrameResult(frame_idx=1, is_speech=0, raw_prob=0.037, smoothed_prob=0.037, is_speech_start=False, is_speech_end=False, speech_start_frame=-1, speech_end_frame=-1), StreamVadFrameResult(frame_idx=2, is_speech=0, raw_prob=0.037, smoothed_prob=0.037, is_speech_start=False, is_speech_end=False, speech_start_frame=-1, speech_end_frame=-1), ...]
 $ fireredvad --task aed --wav_path assets/event.wav --model_dir pretrained_models/FireRedVAD/AED
-# 2026-03-06 17:31:13,912 (param:16) INFO: #param of DetectModel <class 'fireredvad.core.detect_model.DetectModel'> is 588931 = 2.2 MB (float32)
-# 2026-03-06 17:31:13,989 (fireredvad_cli:37) INFO: Result: {'dur': 22.016, 'event2timestamps': {'speech': [(0.4, 3.56), (3.66, 9.08), (9.27, 9.77), (10.78, 21.76)], 'singing': [(1.79, 19.96), (19.97, 22.016)], 'music': [(0.09, 12.32), (12.33, 22.016)]}, 'event2ratio': {'speech': 0.848, 'singing': 0.905, 'music': 0.991}, 'wav_path': 'assets/event.wav'}
+# #param of DetectModel <class 'fireredvad.core.detect_model.DetectModel'> is 588931 = 2.2 MB (float32)
+# Result: {'dur': 22.016, 'event2timestamps': {'speech': [(0.4, 3.56), (3.66, 9.08), (9.27, 9.77), (10.78, 21.76)], 'singing': [(1.79, 19.96), (19.97, 22.016)], 'music': [(0.09, 12.32), (12.33, 22.016)]}, 'event2ratio': {'speech': 0.848, 'singing': 0.905, 'music': 0.991}, 'wav_path': 'assets/event.wav'}
 ```
 
 For source installation, set up `PATH` and `PYTHONPATH` first: `export PATH=$PWD/fireredvad/bin/:$PATH; export PYTHONPATH=$PWD/:$PYTHONPATH`
@@ -216,3 +219,14 @@ Note: FunASR-VAD achieves low Miss Rate but at the cost of high False Alarm Rate
 **Q: What audio format is supported?**
 
 16kHz 16-bit mono PCM wav. Use ffmpeg to convert other formats: `ffmpeg -i <input_audio_path> -ar 16000 -ac 1 -acodec pcm_s16le -f wav <output_wav_path>`
+
+
+## Citation
+```bibtex
+@article{xu2026fireredasr2s,
+  title={FireRedASR2S: A State-of-the-Art Industrial-Grade All-in-One Automatic Speech Recognition System},
+  author={Xu, Kaituo and Jia, Yan and Huang, Kai and Chen, Junjie and Li, Wenpeng and Liu, Kun and Xie, Feng-Long and Tang, Xu and Hu, Yao},
+  journal={arXiv preprint arXiv:2603.10420},
+  year={2026}
+}
+```
