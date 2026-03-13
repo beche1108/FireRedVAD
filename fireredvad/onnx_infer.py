@@ -16,6 +16,16 @@ CUDA_RUNTIME_HELP = (
 )
 
 
+def _available_thread_count():
+    if hasattr(os, "sched_getaffinity"):
+        try:
+            return max(1, len(os.sched_getaffinity(0)))
+        except OSError:
+            pass
+    cpu_count = os.cpu_count()
+    return cpu_count if cpu_count and cpu_count > 0 else 1
+
+
 def _require_onnxruntime():
     try:
         import onnxruntime as ort
@@ -73,6 +83,9 @@ def _build_session(model_path, use_gpu=False):
     ort = _require_onnxruntime()
     session_options = ort.SessionOptions()
     session_options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+    # Explicit thread counts prevent ONNX Runtime from attempting unsupported
+    # CPU affinity pinning in some containerized Linux environments.
+    session_options.intra_op_num_threads = _available_thread_count()
     available_providers = ort.get_available_providers()
 
     if use_gpu:

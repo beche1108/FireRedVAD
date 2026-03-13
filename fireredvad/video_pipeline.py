@@ -2,6 +2,7 @@ import json
 import logging
 import os
 from dataclasses import asdict, dataclass
+from pathlib import Path
 
 import numpy as np
 import soundfile as sf
@@ -14,6 +15,10 @@ from fireredvad.onnx_infer import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _manifest_relative_path(path: str, base_dir: str) -> str:
+    return Path(path).resolve().relative_to(Path(base_dir).resolve()).as_posix()
 
 
 def _require_av():
@@ -138,7 +143,7 @@ class FireRedVideoPipeline:
             if self.config.save_full_audio:
                 audio_path = os.path.join(output_dir, f"{stem}.wav")
                 sf.write(audio_path, wav_np, samplerate=sample_rate)
-                result["audio_path"] = audio_path
+                result["audio_path"] = _manifest_relative_path(audio_path, output_dir)
             if self.config.save_audio_segments:
                 segment_dir = os.path.join(output_dir, "segments")
                 os.makedirs(segment_dir, exist_ok=True)
@@ -235,5 +240,5 @@ class FireRedVideoPipeline:
             segment_name = f"{stem}_{item['segment_id']:04d}_{item['label']}.wav"
             segment_path = os.path.join(segment_dir, segment_name)
             sf.write(segment_path, wav_np[start:end], samplerate=sample_rate)
-            segment_paths[item["segment_id"]] = segment_path
+            segment_paths[item["segment_id"]] = _manifest_relative_path(segment_path, Path(segment_dir).parent)
         return segment_paths
