@@ -115,11 +115,8 @@ def get_mask_from_lengths(lengths):
     Return:
         mask: (N, T)
     """
-    N = lengths.size(0)
-    T = torch.max(lengths).item()
-    mask = torch.zeros(N, T).to(lengths.device)
-    for i in range(N):
-        mask[i, lengths[i]:] = 1
+    T = lengths.max().item()
+    mask = (torch.arange(T, device=lengths.device).unsqueeze(0) >= lengths.unsqueeze(1))
     return mask.to(torch.uint8)
 
 
